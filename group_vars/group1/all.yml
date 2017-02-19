@@ -1,0 +1,4 @@
+key_name: mojo
+aws_region: ap-northeast-1
+ami_id: ami-56d4ad31
+instance_type: t2.nano

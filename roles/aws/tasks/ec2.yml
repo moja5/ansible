@@ -1,0 +1,48 @@
+---
+
+- name: "create keypair"
+  ec2_key:
+    region: "{{ aws_region }}"
+    name: "{{ keypair.name }}"
+  register: keypair_regst
+
+- name: "create keypair file"
+  file:
+    path=~/.ssh/{{ keypair_regst.key.name }}.pem
+    state=touch
+    mode=0600
+  when: keypair_regst.key.private_key is defined
+
+- name: "keypair write"
+  local_action: shell echo "{{ keypair_regst.key.private_key }}" > ~/.ssh/"{{ keypair_regst.key.name }}".pem
+  when: keypair_regst.key.private_key is defined
+
+- name: "create Security Group"
+  ec2_group:
+    name: "{{ secgrp.name }}"
+    description: "{{ secgrp.description }}"
+    vpc_id: "{{ vpc_regst.vpc.id }}"
+    region: "{{ vpc.region }}"
+    rules:
+      - proto: tcp
+        from_port: "{{ secgrp.fromport }}"
+        to_port: "{{ secgrp.toport }}"
+        cidr_ip: "{{ secgrp.destip }}"
+
+- name: "create ec2 instance"
+  ec2:
+    region: "{{ aws_region }}"
+    instance_tags:
+      Name: "{{ ec2.name }}"
+    key_name: "{{ keypair.name }}"
+    instance_type: "{{ ec2.instance_type }}"
+    image: "{{ ec2.image }}"
+    wait: yes
+    group: "{{ secgrp.name }}"
+    count: 1
+    vpc_subnet_id: "{{ vpc_regst.subnets[0].id }}"
+    assign_public_ip: yes
+  register: ec2_regst
+
+- debug: var=ec2_regst
+  when: ec2_regst | success

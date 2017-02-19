@@ -1,0 +1,26 @@
+---
+vpc:
+  vpc_name: "VPC-mojo"
+  region: "ap-northeast-1"
+  cidr_block: "172.16.0.0/16"
+  sabnet_name1: "sabnet-1"
+  sabnet_name2: "sabnet-2"
+  sabnet_cidr1: "172.16.10.0/24"
+  sabnet_cidr2: "172.16.20.0/24"
+  az1: "ap-northeast-1a"
+  az2: "ap-northeast-1c"
+
+keypair:
+  name: "mojo5"
+
+secgrp:
+  name: "sg-ssh"
+  description: "web application security group"
+  fromport: "22"
+  toport: "22"
+  destip: "0.0.0.0/0"
+
+ec2:
+  name: "Webserver"
+  image: "ami-f80e0596"
+  instance_type: "t2.micro"

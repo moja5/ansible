@@ -1,0 +1,8 @@
+---
+
+- name: "create vpc"
+  include: vpc.yml
+
+- name: "create ec2"
+  include: ec2.yml
+
